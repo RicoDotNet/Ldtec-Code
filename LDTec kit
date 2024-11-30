@@ -1,0 +1,114 @@
+from machine import Pin, time_pulse_us
+import time
+import urequests
+import network
+
+# Wi-Fi credentials
+SSID = "InsertYourSSIDHere"  # Your Wi-Fi SSID
+PASSWORD = "InsertYourPasswordHere"  # Your Wi-Fi password
+
+# Telegram bot credentials
+BOT_TOKEN = "InsertYourBotTokenHere"  # Your Telegram BOT Token
+CHAT_ID = "InsertYourChatIDHere"  # Your Telegram Chat ID
+
+# Ultrasonic sensor pins
+TRIG_PIN = 5  # Adjust based on your pin setup
+ECHO_PIN = 18  # Adjust based on your pin setup
+
+# Buzzer pin
+BUZZER_PIN = 23  # Adjust based on your pin setup
+
+# Initialize pins
+trig = Pin(TRIG_PIN, Pin.OUT)
+echo = Pin(ECHO_PIN, Pin.IN)
+buzzer = Pin(BUZZER_PIN, Pin.OUT)
+
+# Connect to Wi-Fi
+def connect_wifi():
+    station = network.WLAN(network.STA_IF)
+    
+    if station.isconnected():
+        print("Already connected")
+        return
+
+    station.active(True)
+    station.connect(SSID, PASSWORD)
+
+    # Retry connection if it fails
+    retries = 10
+    while not station.isconnected() and retries > 0:
+        print("Connecting to Wi-Fi... Attempting retry")
+        retries -= 1
+        time.sleep(1)
+
+    if station.isconnected():
+        print("Connection successful!")
+        print(station.ifconfig())
+    else:
+        print("Failed to connect to Wi-Fi after several attempts.")
+
+# Measure distance
+def measure_distance():
+    trig.off()
+    time.sleep_us(2)
+    trig.on()
+    time.sleep_us(10)
+    trig.off()
+
+    while echo.value() == 0:
+        start_time = time.ticks_us()
+    while echo.value() == 1:
+        end_time = time.ticks_us()
+
+    duration = time.ticks_diff(end_time, start_time)
+    distance = (duration * 0.034) / 2  # Convert to cm
+    return distance
+
+# Get average distance for accuracy
+def get_average_distance(samples=5):
+    distances = []
+    for _ in range(samples):
+        distance = measure_distance()
+        distances.append(distance)
+        time.sleep(0.05)  # Small delay between measurements
+    return sum(distances) / len(distances)
+
+# Send message to Telegram bot
+def send_telegram_message(message):
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    payload = {'chat_id': CHAT_ID, 'text': message}
+    try:
+        response = urequests.post(url, json=payload, timeout=5000)  # Set a timeout of 5 seconds
+        response.close()
+        print("Message sent to Telegram")
+    except Exception as e:
+        print("Failed to send message:", e)
+
+# Main function to monitor distance and control buzzer
+def main():
+    connect_wifi()  # Connect to Wi-Fi
+    last_telegram_time = 0  # Time of last Telegram message
+    telegram_interval = 2  # Interval for sending Telegram messages in seconds
+
+    while True:
+        # Get the average distance using multiple samples
+        distance = get_average_distance()
+        print(f"Distance: {distance:.2f} cm")
+
+        # Activate buzzer if distance is less than 5 cm
+        if distance < 5:
+            buzzer.value(1)  # Turn on the buzzer
+        else:
+            buzzer.value(0)  # Turn off the buzzer
+
+        # Send Telegram message if interval has passed
+        current_time = time.time()
+        if current_time - last_telegram_time > telegram_interval:
+            send_telegram_message(f"Ultrasonic Sensor Distance: {distance:.2f} cm")
+            last_telegram_time = current_time  # Update last send time for Telegram
+
+        # Small delay to prevent excessive processing
+        time.sleep(0.1)
+
+if __name__ == "__main__":
+    main()
