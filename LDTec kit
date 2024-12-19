@@ -4,8 +4,8 @@ import urequests
 import network
 
 # Wi-Fi credentials
-SSID = "001256DOTNET"  # Your Wi-Fi SSID
-PASSWORD = "cikguiwana"  # Your Wi-Fi password
+SSID = "TP-Link_17FD"  # Your Wi-Fi SSID
+PASSWORD = "52928065"  # Your Wi-Fi password
 
 # Telegram bot credentials
 BOT_TOKEN = "7892393846:AAG_7rHR4OAEwTIWGY-vedhEcKKocJ-UYnw"
