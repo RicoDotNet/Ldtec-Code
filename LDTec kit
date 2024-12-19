@@ -4,12 +4,12 @@ import urequests
 import network
 
 # Wi-Fi credentials
-SSID = "InsertYourSSIDHere"  # Your Wi-Fi SSID
-PASSWORD = "InsertYourPasswordHere"  # Your Wi-Fi password
+SSID = "001256DOTNET"  # Your Wi-Fi SSID
+PASSWORD = "cikguiwana"  # Your Wi-Fi password
 
 # Telegram bot credentials
-BOT_TOKEN = "InsertYourBotTokenHere"  # Your Telegram BOT Token
-CHAT_ID = "InsertYourChatIDHere"  # Your Telegram Chat ID
+BOT_TOKEN = "7892393846:AAG_7rHR4OAEwTIWGY-vedhEcKKocJ-UYnw"
+CHAT_ID = "6398307452"
 
 # Ultrasonic sensor pins
 TRIG_PIN = 5  # Adjust based on your pin setup
