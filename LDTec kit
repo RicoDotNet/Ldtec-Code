@@ -4,12 +4,12 @@ import time
 from machine import Pin, time_pulse_us
 
 # === WiFi Credentials ===
-ssid = 'ZTE_DCE088'
-password = '6F567CDA42'
+ssid = 'WFI_NAME'
+password = 'WIFI_PASSWORD'
 
 # === Telegram Bot Info ===
-bot_token = '7135428028:AAEX5v4gDEe0vKgy9J78oMtDgb5HjLXEijk'
-chat_id = '6398307452'
+bot_token = 'BOT_TOKEN'
+chat_id = 'CHAT_ID'
 
 # === Pin Setup ===
 trig = Pin(5, Pin.OUT)
